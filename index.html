@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Metadatos -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título de la página -->
+    <title>Lista de tareas</title>
+
+    <link rel="icon" href="icono.ico" type="image/x-icon">
+    <!-- Enlace al archivo de estilos -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Contenedor principal de la página -->
+    <div class="container">
+
+        <!-- Título de la aplicación -->
+        <h1>Lista de tareas</h1>
+
+        <!-- Contenedor del formulario para añadir tareas -->
+        <div class="form-container">
+            <form>
+                 <!-- Input para ingresar una tarea -->
+                <input type="text" placeholder="Ingresar tarea...">
+                <!-- Botón para agregar tareas-->
+                <button class="btn-add">+</button>
+            </form>
+        </div>
+
+         <!-- Contenedor de la lista de tareas -->
+        <div class="list-container">
+            <ul>
+                
+            </ul>
+        </div>
+
+         <!-- Mensaje cuando no hay tareas pendientes -->
+        <div class="empty">
+            <p>No hay tareas pendientes.</p>
+        </div>
+    </div>
+    
+    <!-- Enlace al archivo de JavaScript donde se encuentra la lógica de la aplicación -->
+    <script src="app.js"></script>
+</body>
+</html>
