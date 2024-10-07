@@ -2,12 +2,15 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const app = express();
+
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+
 // Conectar a la base de datos SQLite
-const db = new sqlite3.Database('tareas.db', (err) => {
+const db = new sqlite3.Database('server/tareas.db', (err) => {
 if (err) {
 console.error('Error al abrir la base de datos:', err.message);
 } else {
@@ -21,38 +24,18 @@ app.listen(PORT, () => {
 console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
-app.post('/tareas', (req, res) => {
-    const { nombre, dia, hora } = req.body;  // Se extraen los nuevos campos del cuerpo de la solicitud
-    const query = `INSERT INTO tareas (nombre, dia, hora, completada) VALUES (?, ?, ?, ?)`;
-  
-    db.run(query, [nombre, dia, hora, 0], function (err) {  // 'completada' se inicializa a 0 por defecto
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
-  
-      res.json({ 
-        id: this.lastID, 
-        nombre, 
-        dia, 
-        hora, 
-        completada: 0 
-      });
-    });
+// Configuración
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+
+//Ruta
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname,'public', 'index.html'));
   });
 
-  app.get('/tareas', (req, res) => {
-const query = `SELECT * FROM tareas`;
-db.all(query, [], (err, rows) => {
-if (err) {
-res.status(400).json({ error: err.message });
-return;
-}
-res.json({ tareas: rows });
-});
-});
+//Métodos
 
-
+//GET: Obtener la lista de tareas
 app.get('/tareas', (req, res) => {
     const query = `SELECT * FROM tareas`;
     db.all(query, [], (err, rows) => {
@@ -65,15 +48,41 @@ app.get('/tareas', (req, res) => {
 });
 
 
-app.delete('/tareas/:id', (req, res) => {
-    const { id } = req.params;
-    const query = `DELETE FROM tareas WHERE id = ?`;
-    db.run(query, id, function (err) {
-    if (err) {
-    
-    res.status(400).json({ error: err.message });
-    return;
-    }
-    res.json({ message: 'Tarea eliminada correctamente' });
-    });
+// POST: Agregar una nueva tarea
+app.post('/tareas', (req, res) => {
+  const { descripcion } = req.body;
+  const query = `INSERT INTO tareas (descripcion, completada) VALUES (?, 0)`;  // Completada por defecto es 0 (no completada)
+  db.run(query, [descripcion], function (err) {
+      if (err) {
+          res.status(400).json({ error: err.message });
+          return;
+      }
+      res.json({ id: this.lastID, descripcion, completada: 0 });
+  });
+});
+
+// PUT: Actualizar una tarea (completar o descompletar)
+app.put('/tareas', (req, res) => {
+  const { descripcion, completada } = req.body;
+  const query = `UPDATE tareas SET completada = ? WHERE descripcion = ?`;
+  db.run(query, [completada, descripcion], function (err) {
+      if (err) {
+          res.status(400).json({ error: err.message });
+          return;
+      }
+      res.json({ message: 'Tarea actualizada correctamente' });
+  });
+});
+
+// DELETE: Eliminar una tarea
+app.delete('/tareas', (req, res) => {
+  const { descripcion } = req.body;
+  const query = `DELETE FROM tareas WHERE descripcion = ?`;
+  db.run(query, [descripcion], function (err) {
+      if (err) {
+          res.status(400).json({ error: err.message });
+          return;
+      }
+      res.json({ message: 'Tarea eliminada correctamente' });
+  });
 });
