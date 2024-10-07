@@ -24,11 +24,11 @@ app.listen(PORT, () => {
 console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
-// Configuración
+// Configuración para los archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-//Ruta
+//Ruta del index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname,'public', 'index.html'));
   });
